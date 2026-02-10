@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PDFDocument, rgb } from "pdf-lib";
 import Tesseract from "tesseract.js";
-import * as pdfjs from "pdfjs-dist/legacy/build/pdf.js";
+import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
 import { createCanvas } from "canvas";
 import path from "path";
 
