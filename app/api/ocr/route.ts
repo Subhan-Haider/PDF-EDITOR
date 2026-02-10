@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PDFDocument, rgb } from "pdf-lib";
 import Tesseract from "tesseract.js";
-import * as pdfjs from "pdfjs-dist";
+import * as pdfjs from "pdfjs-dist/legacy/build/pdf.js";
 import { createCanvas } from "canvas";
 import path from "path";
 
@@ -34,10 +34,11 @@ export async function POST(req: NextRequest) {
             "pdfjs-dist",
             "standard_fonts"
         );
-        const pdf = await pdfjs.getDocument({
+        const pdf = await (pdfjs as any).getDocument({
             data,
             standardFontDataUrl: `${standardFontDataPath}${path.sep}`,
             disableFontFace: true, // Avoid font loading issues in Node
+            disableWorker: true,
             isEvalSupported: false,
             useSystemFonts: true,
         }).promise;
