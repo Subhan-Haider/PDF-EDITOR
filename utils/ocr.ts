@@ -37,10 +37,14 @@ export async function processPdfWithBackend(file: File, onProgress?: (status: st
         let message = 'OCR Processing failed';
         try {
             const errorData = await response.json();
-            if (errorData && typeof errorData.error === 'string' && errorData.error.trim().length > 0) {
-                message = errorData.error;
-            } else if (errorData && typeof errorData.details === 'string' && errorData.details.trim().length > 0) {
-                message = errorData.details;
+            const errorText = errorData && typeof errorData.error === 'string' ? errorData.error.trim() : '';
+            const detailsText = errorData && typeof errorData.details === 'string' ? errorData.details.trim() : '';
+            if (detailsText.length > 0 && (!errorText || errorText === 'Failed to process PDF')) {
+                message = detailsText;
+            } else if (errorText.length > 0) {
+                message = errorText;
+            } else if (detailsText.length > 0) {
+                message = detailsText;
             }
         } catch {
             try {
