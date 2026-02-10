@@ -122,8 +122,9 @@ export async function POST(req: NextRequest) {
 
         // 4. Return the new PDF
         const pdfBytes = await newPdfDoc.save();
+        const body = Buffer.from(pdfBytes);
 
-        return new NextResponse(pdfBytes, {
+        return new NextResponse(body, {
             status: 200,
             headers: {
                 'Content-Type': 'application/pdf',
