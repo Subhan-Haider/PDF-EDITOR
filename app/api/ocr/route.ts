@@ -38,7 +38,6 @@ export async function POST(req: NextRequest) {
             data,
             standardFontDataUrl: `${standardFontDataPath}${path.sep}`,
             disableFontFace: true, // Avoid font loading issues in Node
-            disableWorker: true,
             isEvalSupported: false,
             useSystemFonts: true,
         }).promise;
