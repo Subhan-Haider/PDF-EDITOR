@@ -65,9 +65,13 @@ export async function POST(req: NextRequest) {
 
             // 2. Run Tesseract OCR
             // We use 'eng' as default language
-            const { data: { text, words } } = await Tesseract.recognize(imageBuffer, "eng", {
+            const { data } = await Tesseract.recognize(imageBuffer, "eng", {
                 logger: m => console.log(`[Page ${i}] ${m.status}: ${Math.floor(m.progress * 100)}%`)
             });
+            const words = (data as any).words as Array<{
+                text: string;
+                bbox: { x0: number; y0: number; x1: number; y1: number };
+            }> | undefined;
 
             // 3. Rebuild PDF Page
             // Add page to new PDF with original dimensions (scaled down to 1.0)
@@ -87,7 +91,7 @@ export async function POST(req: NextRequest) {
             // Overlay transparent text (searchable/selectable layer)
             const font = await newPdfDoc.embedFont(StandardFonts.Helvetica);
 
-            words.forEach((word) => {
+            (words || []).forEach((word) => {
                 // Tesseract bbox: x0, y0, x1, y1 (pixels from top-left)
                 // PDF coords: x, y (points from bottom-left)
                 // Scale factor: Tesseract ran on scale 2.0 image, PDF is scale 1.0 (72 DPI usually)
