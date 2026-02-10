@@ -27,7 +27,7 @@ import {
 import { PDFDocument, rgb, StandardFonts, PDFName } from 'pdf-lib';
 import { pdfjs } from '@/lib/pdf-init.client';
 import { Document, Page } from 'react-pdf';
-import { isScannedPdf, pdfPageToImage, runOCR, createMultiPageEditablePdf } from '@/utils/ocr';
+import { isScannedPdf, processPdfWithBackend } from '@/utils/ocr';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
@@ -241,36 +241,18 @@ export default function PDFEditor() {
             const totalPages = tempPdf.numPages;
             const processedPages = [];
 
-            for (let i = 1; i <= totalPages; i++) {
-                setOcrStatus(`Processing Page ${i} of ${totalPages}...`);
-                setOcrProgress((i - 1) / totalPages * 100);
+            setOcrStatus('Processing with Neural Engine (Backend)...');
+            setOcrProgress(30);
 
-                const imageResult = await pdfPageToImage(tempPdf, i);
+            // Send file to backend for full processing
+            const editableFile = await processPdfWithBackend(file, (status) => {
+                setOcrStatus(status);
+                // Simulate progress updates for better UX
+                setOcrProgress((prev) => Math.min(prev + 10, 90));
+            });
 
-                const structuralData = await runOCR(imageResult.dataUrl, (p) => {
-                    const baseProgress = ((i - 1) / totalPages) * 100;
-                    const pageWeight = (1 / totalPages) * 100;
-                    setOcrProgress(baseProgress + (p * pageWeight * 0.8));
-                });
-
-                processedPages.push({
-                    structuralData,
-                    imageDataUrl: imageResult.dataUrl
-                });
-            }
-
-            const lowConfidencePages = processedPages
-                .map((p, idx) => p.structuralData.confidence < 70 ? idx + 1 : null)
-                .filter(p => p !== null);
-
-            if (lowConfidencePages.length > 0) {
-                alert(`Note: Neural OCR confidence is low on pages: ${lowConfidencePages.join(', ')}. Some text structure might be distorted.`);
-            }
-
-            setOcrStatus('Synthesizing Neural PDF Layers...');
-            setOcrProgress(95);
-            const editablePdfBytes = await createMultiPageEditablePdf(processedPages);
-            const editableFile = new File([editablePdfBytes as BlobPart], file.name.replace('.pdf', '') + '_editable.pdf', { type: 'application/pdf' });
+            setOcrStatus('Finalizing Document...');
+            setOcrProgress(100);
 
             setPdfFile(editableFile);
             setPdfUrl(URL.createObjectURL(editableFile));
@@ -278,7 +260,7 @@ export default function PDFEditor() {
             setZoom(100);
         } catch (error) {
             console.error('OCR failed:', error);
-            alert('Cloud-less OCR failed. Opening original file.');
+            alert(`Backend OCR failed: ${(error as Error).message}. Opening original file.`);
             setPdfFile(file);
             setPdfUrl(URL.createObjectURL(file));
         } finally {
