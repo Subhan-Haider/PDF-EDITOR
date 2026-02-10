@@ -13,6 +13,14 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
     try {
+        const pdfjsAny = pdfjs as any;
+        if (pdfjsAny.GlobalWorkerOptions) {
+            pdfjsAny.GlobalWorkerOptions.workerSrc = undefined;
+        }
+        if (typeof pdfjsAny.disableWorker !== "undefined") {
+            pdfjsAny.disableWorker = true;
+        }
+
         const formData = await req.formData();
         const file = formData.get("file");
 
@@ -34,7 +42,7 @@ export async function POST(req: NextRequest) {
             "pdfjs-dist",
             "standard_fonts"
         );
-        const pdf = await (pdfjs as any).getDocument({
+        const pdf = await pdfjsAny.getDocument({
             data,
             standardFontDataUrl: `${standardFontDataPath}${path.sep}`,
             disableFontFace: true, // Avoid font loading issues in Node
