@@ -1,0 +1,31 @@
+﻿
+> pdf-editor@0.1.0 build
+> next build
+
+   Γû▓ Next.js 15.1.4
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Skipping linting
+   Checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/5) ...
+   Generating static pages (1/5) 
+   Generating static pages (2/5) 
+   Generating static pages (3/5) 
+ Γ£ô Generating static pages (5/5)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+Γöî Γùï /                                    1.23 kB         107 kB
+Γöö Γùï /_not-found                          979 B           107 kB
++ First Load JS shared by all            106 kB
+  Γö£ chunks/4bd1b696-42bac3484a89797c.js  52.9 kB
+  Γö£ chunks/517-a63d8268f2752cea.js       50.5 kB
+  Γöö other shared chunks (total)          2.51 kB
+
+
+Γùï  (Static)  prerendered as static content
+
+
