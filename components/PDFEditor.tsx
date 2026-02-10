@@ -28,8 +28,6 @@ import { PDFDocument, rgb, StandardFonts, PDFName } from 'pdf-lib';
 import { pdfjs } from '@/lib/pdf-init.client';
 import { Document, Page } from 'react-pdf';
 import { isScannedPdf, processPdfWithBackend } from '@/utils/ocr';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
 
 // Worker configuration is handled in @/lib/pdfjs
 
@@ -888,7 +886,7 @@ export default function PDFEditor() {
                                     </div>
                                     <h3 className="text-3xl font-bold mb-4">Scanned PDF Detected</h3>
                                     <p className="text-gray-400 mb-8 max-w-md text-lg leading-relaxed">
-                                        This document appears to be an image. Standard text editing is disabled unless we perform <span className="text-neural-400 font-semibold">Neural OCR</span> to reconstruct the text layers.
+                                        Why the PDF isn't editable: scanned PDFs are image-only, so there is no text layer. Run <span className="text-neural-400 font-semibold">OCR</span> to create an editable text layer.
                                     </p>
                                     <div className="flex flex-col sm:flex-row gap-4">
                                         <motion.button
@@ -898,7 +896,7 @@ export default function PDFEditor() {
                                             className="bg-gradient-neural px-8 py-4 rounded-2xl font-bold text-white shadow-xl shadow-neural-500/30 flex items-center gap-3"
                                         >
                                             <Edit3 size={20} />
-                                            Convert to Editable Text
+                                            Perform OCR
                                         </motion.button>
                                         <motion.button
                                             whileHover={{ scale: 1.05 }}

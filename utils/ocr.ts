@@ -7,11 +7,16 @@ export async function isScannedPdf(file: File): Promise<boolean> {
     const buffer = await file.arrayBuffer();
     const pdf = await pdfjs.getDocument({ data: buffer }).promise;
 
-    // Check the first page for text
-    const page = await pdf.getPage(1);
-    const text = await page.getTextContent();
+    const maxPagesToCheck = Math.min(pdf.numPages, 3);
+    for (let pageIndex = 1; pageIndex <= maxPagesToCheck; pageIndex += 1) {
+        const page = await pdf.getPage(pageIndex);
+        const text = await page.getTextContent();
+        if (text.items.length > 0) {
+            return false;
+        }
+    }
 
-    return text.items.length === 0;
+    return true;
 }
 
 /**
@@ -29,8 +34,25 @@ export async function processPdfWithBackend(file: File, onProgress?: (status: st
     });
 
     if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'OCR Processing failed');
+        let message = 'OCR Processing failed';
+        try {
+            const errorData = await response.json();
+            if (errorData && typeof errorData.error === 'string' && errorData.error.trim().length > 0) {
+                message = errorData.error;
+            } else if (errorData && typeof errorData.details === 'string' && errorData.details.trim().length > 0) {
+                message = errorData.details;
+            }
+        } catch {
+            try {
+                const errorText = await response.text();
+                if (errorText && errorText.trim().length > 0) {
+                    message = errorText;
+                }
+            } catch {
+                // keep default message
+            }
+        }
+        throw new Error(`${message} (HTTP ${response.status})`);
     }
 
     if (onProgress) onProgress('Downloading Editable PDF...');

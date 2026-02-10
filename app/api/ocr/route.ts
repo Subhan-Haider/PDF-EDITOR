@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PDFDocument, rgb } from "pdf-lib";
 import Tesseract from "tesseract.js";
-import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
+import * as pdfjs from "pdfjs-dist";
 import { createCanvas } from "canvas";
+import path from "path";
 
 // Use standard font for PDF building
 import { StandardFonts } from 'pdf-lib';
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
     try {
@@ -24,10 +28,19 @@ export async function POST(req: NextRequest) {
         const data = new Uint8Array(buffer);
 
         // Load document using pdfjs
+        const standardFontDataPath = path.join(
+            process.cwd(),
+            "node_modules",
+            "pdfjs-dist",
+            "standard_fonts"
+        );
         const pdf = await pdfjs.getDocument({
             data,
-            standardFontDataUrl: `node_modules/pdfjs-dist/standard_fonts/`,
+            standardFontDataUrl: `${standardFontDataPath}${path.sep}`,
             disableFontFace: true, // Avoid font loading issues in Node
+            disableWorker: true,
+            isEvalSupported: false,
+            useSystemFonts: true,
         }).promise;
 
         // Create a new PDF document using pdf-lib (this will be our output)
@@ -116,9 +129,10 @@ export async function POST(req: NextRequest) {
         });
 
     } catch (error) {
-        console.error("Backend OCR/Processing Error:", error);
+        const details = error instanceof Error ? error.message : String(error);
+        console.error("Backend OCR/Processing Error:", details);
         return NextResponse.json(
-            { error: "Failed to process PDF", details: (error as Error).message },
+            { error: "Failed to process PDF", details },
             { status: 500 }
         );
     }

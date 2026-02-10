@@ -4,6 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+@import "react-pdf/dist/esm/Page/TextLayer.css";
+
 :root {
   --background: #0a0a0f;
   --foreground: #f4f4f5;
@@ -92,4 +95,3 @@ body {
   );
   background-size: 1000px 100%;
 }
-
