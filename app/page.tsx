@@ -13,6 +13,10 @@ if (typeof window !== 'undefined') {
 }
 
 export default function Home() {
-  return <PDFEditor />;
+  return (
+    <main className="min-h-screen w-full">
+      <PDFEditor />
+    </main>
+  );
 }
 
