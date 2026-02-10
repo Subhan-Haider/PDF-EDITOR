@@ -985,14 +985,16 @@ export default function PDFEditor() {
                                                     }
                                                     className="shadow-2xl"
                                                 >
-                                                    <Page
-                                                        pageNumber={currentPage}
-                                                        scale={zoom / 100}
-                                                        onLoadSuccess={onPageLoadSuccess}
-                                                        renderAnnotationLayer={true}
-                                                        renderTextLayer={true}
-                                                        className="overflow-hidden"
-                                                    />
+                                                    {numPages > 0 && (
+                                                        <Page
+                                                            pageNumber={currentPage}
+                                                            scale={zoom / 100}
+                                                            onLoadSuccess={onPageLoadSuccess}
+                                                            renderAnnotationLayer={true}
+                                                            renderTextLayer={true}
+                                                            className="overflow-hidden"
+                                                        />
+                                                    )}
                                                 </Document>
                                             </div>
 
