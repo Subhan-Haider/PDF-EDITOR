@@ -88,6 +88,10 @@ export default function PDFEditor() {
     // mount check
     React.useEffect(() => {
         console.log('PDFEditor Mounted - Ready for files');
+        // Extra guard: Ensure worker is set
+        const workerUrl = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+        pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+        console.log('PDF Worker Sync inside component:', workerUrl);
     }, []);
 
     // Intelligence: Push current state to history before major changes
